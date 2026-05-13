@@ -5,7 +5,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen bg-[#f4f5f7]">
       <Sidebar />
-      <main className="lg:ml-55 flex-1 p-8">
+      <main className=" flex-1 ">
         <DashNav />
         {children}
       </main>

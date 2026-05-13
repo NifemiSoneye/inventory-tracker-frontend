@@ -85,6 +85,10 @@ export const inventoryApiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Item", id: "LIST" }],
     }),
+    getAnalytics: builder.query({
+      query: () => "/dashboard",
+      providesTags: [{ type: "Item", id: "LIST" }],
+    }),
 
     updateItem: builder.mutation({
       query: ({ id, ...data }: UpdateItemPayload) => ({
@@ -118,6 +122,7 @@ export const {
   useCreateItemMutation,
   useUpdateItemMutation,
   useDeleteItemMutation,
+  useGetAnalyticsQuery,
 } = inventoryApiSlice;
 
 export const selectItemsResult =
