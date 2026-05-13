@@ -1,16 +1,12 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
+import MainLayout from "./components/layout/MainLayout";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <>
-      <p className="bg-red-500 text-white w-[50%] rounded-md">I love pussy</p>
-    </>
+    <MainLayout>
+      <Dashboard />
+    </MainLayout>
   );
-}
+};
 
 export default App;
