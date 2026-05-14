@@ -22,7 +22,7 @@ const initialState = itemsAdapter.getInitialState();
 export const inventoryApiSlice = createApi({
   reducerPath: "inventoryApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3500",
+    baseUrl: import.meta.env.VITE_API_URL,
     credentials: "include",
   }),
   tagTypes: ["Item"],
