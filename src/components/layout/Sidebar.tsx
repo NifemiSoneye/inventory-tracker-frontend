@@ -1,13 +1,15 @@
 import { useSelector, useDispatch } from "react-redux";
-import {
-  selectSidebarOpen,
-  toggleSidebar,
-  closeSidebar,
-} from "../../features/ui/uiSlice";
-
+import { selectSidebarOpen, closeSidebar } from "../../features/ui/uiSlice";
+import { useGetAllItemsQuery } from "@/api/inventoryApi";
+import { type InventoryItem } from "@/lib/types";
 const SideBar = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(selectSidebarOpen);
+  const { data: itemsData } = useGetAllItemsQuery(undefined);
+  const items = itemsData
+    ? (Object.values(itemsData.entities).filter(Boolean) as InventoryItem[])
+    : [];
+  const recentItems = items.slice(-4).reverse();
   return (
     <>
       {isOpen && (
@@ -32,16 +34,45 @@ const SideBar = () => {
             Menu
           </p>
 
-          <div className="flex items-center gap-3 text-sm font-semibold cursor-pointer py-[0.6rem] px-3 rounded-md transition-colors text-[#8A93A8] hover:text-white hover:bg-white/5">
+          <div className="flex items-center gap-3 text-sm font-semibold cursor-pointer py-[0.6rem] px-3 rounded-md transition-colors bg-[#C9A84C1A] text-[#C9A84C]">
             <span className="text-base w-5">▦</span>
             <p>Dashboard</p>
           </div>
-
-          <div className="flex items-center gap-3 text-sm font-semibold cursor-pointer py-[0.6rem] px-3 rounded-md transition-colors text-[#8A93A8] hover:text-white hover:bg-white/5">
-            <span className="text-base w-5">☰</span>
-            <p>Inventory</p>
-          </div>
         </section>
+        <div className="px-4 py-4 border-t border-t-[#3a1f50]">
+          <p className="text-xs text-[rgba(255,255,255,0.3)] uppercase tracking-widest mb-3">
+            Recent items
+          </p>
+          {recentItems.length === 0 ? (
+            <p className="text-xs text-[rgba(255,255,255,0.3)]">No items yet</p>
+          ) : (
+            recentItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between mb-3"
+              >
+                <p className="text-xs text-white truncate flex-1 mr-2">
+                  {item.name}
+                </p>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${
+                    item.status === "In stock"
+                      ? "bg-green-100 text-green-800"
+                      : item.status === "Low stock"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {item.status === "In stock"
+                    ? "In"
+                    : item.status === "Low stock"
+                      ? "Low"
+                      : "Out"}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
       </aside>
     </>
   );

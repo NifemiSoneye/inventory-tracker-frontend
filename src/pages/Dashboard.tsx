@@ -1,10 +1,8 @@
-import React from "react";
 import { useGetAnalyticsQuery } from "@/api/inventoryApi";
 import { Button } from "@/components/ui/button";
 import { type InventoryItem } from "@/lib/types";
 import { useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { useGetAllItemsQuery, selectAllItems } from "@/api/inventoryApi";
+import { useGetAllItemsQuery } from "@/api/inventoryApi";
 import ItemTable from "./ItemTable";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,16 +14,19 @@ import { useDeleteItemMutation } from "@/api/inventoryApi";
 import { DebouncedInput } from "@/components/DebouncedInput";
 const Dashboard = () => {
   const [search, setSearch] = useState("");
-  const { isLoading, isError } = useGetAllItemsQuery({
-    search: search || undefined,
-  });
+  const {
+    data: itemsData,
+    isLoading,
+    isError,
+  } = useGetAllItemsQuery({ search: search || undefined });
+  const items = itemsData
+    ? (Object.values(itemsData.entities).filter(Boolean) as InventoryItem[])
+    : [];
   const [updateItem, { isLoading: isUpdateLoading }] = useUpdateItemMutation();
   const [createItem, { isLoading: isCreateLoading }] = useCreateItemMutation();
   const [deleteItem, { isLoading: isDeleteLoading }] = useDeleteItemMutation();
-  const items = useSelector(selectAllItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [modalErrMsg, setModalErrMsg] = useState("");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -154,7 +155,7 @@ const Dashboard = () => {
 
   if (isLoading)
     return (
-      <div className="fixed inset-0 z-50 bg-[#0B1628]">
+      <div className="fixed inset-0 z-50 bg-[#1a0b24]">
         <div className="w-full h-dvh grid place-content-center">
           <LoaderCircle className="h-48 w-48 animate-spin text-white" />
         </div>
@@ -208,7 +209,12 @@ const Dashboard = () => {
           <p>unavailable</p>
         </div>
       </div>
-
+      <DebouncedInput
+        value={search}
+        onChange={(value) => setSearch(value as string)} // ✅ correct
+        placeholder="Search products..."
+        className="bg-[#303030] text-white border-[#292c33] placeholder:text-gray-500 mb-4"
+      />
       <ItemTable
         data={items}
         onEdit={handleEdit}
@@ -269,7 +275,7 @@ const Dashboard = () => {
             </Label>
 
             <Input
-              className={`w-full mt-3 rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
+              className={`w-full rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             />
@@ -282,7 +288,7 @@ const Dashboard = () => {
             </Label>
 
             <Input
-              className={`w-full mt-3 rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
+              className={`w-full rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
               value={formatWithCommas(quantity)}
               onChange={(e) => handleAmountChange(e.target.value)}
             />
@@ -294,7 +300,7 @@ const Dashboard = () => {
               Price
             </Label>
             <Input
-              className={`w-full mt-3 rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
+              className={`w-full rounded-sm text-white  bg-[#FFFFFF0D] p-[0.6rem] text-sm focus:outline-none font-sans`}
               value={formatWithCommas(price)}
               onChange={(e) => handlePriceChange(e.target.value)}
             />
@@ -341,6 +347,12 @@ const Dashboard = () => {
           </div>
         </>
       )}
+      <button
+        className="fixed bottom-6 right-6 lg:hidden bg-[#2f1340] text-white rounded-full px-5 py-3 text-sm font-semibold shadow-lg z-30"
+        onClick={() => setIsModalOpen(true)}
+      >
+        + Add Item
+      </button>
     </div>
   );
 };

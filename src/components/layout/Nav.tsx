@@ -1,8 +1,7 @@
 import { Button } from "../ui/button";
-import { useSelector, useDispatch } from "react-redux";
-import { selectSidebarOpen, toggleSidebar } from "../../features/ui/uiSlice";
+import { useDispatch } from "react-redux";
+import { toggleSidebar } from "../../features/ui/uiSlice";
 const DashNav = () => {
-  const isOpen = useSelector(selectSidebarOpen);
   // dispatch actions
   const dispatch = useDispatch();
 

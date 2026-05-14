@@ -1,12 +1,25 @@
 import { type InventoryItem } from "@/lib/types";
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
   type CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type ColumnFiltersState,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
+
+import { useState } from "react";
+import {} from "@tanstack/react-table";
 
 import {
   Table,
@@ -38,6 +51,8 @@ type Props = {
 };
 
 const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const uniqueCategories = [...new Set(data.map((item) => item.category))];
   const ActionsCell = ({ row }: CellContext<InventoryItem, unknown>) => {
     return (
       <DropdownMenu>
@@ -141,40 +156,110 @@ const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
   const table = useReactTable({
     data,
     columns,
+    state: { columnFilters },
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
   return (
-    <div className="rounded-lg overflow-hidden border border-border overflow-x-auto ">
-      <Table className="bg-[#303030] text-white">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="text-white">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    <>
+      <div className="flex gap-3 mb-4">
+        <Select
+          onValueChange={(value) => {
+            setColumnFilters((prev) => {
+              const others = prev.filter((f) => f.id !== "category");
+              return value !== "all"
+                ? [...others, { id: "category", value }]
+                : others;
+            });
+          }}
+        >
+          <SelectTrigger className="bg-[#303030] text-white border-[#292c33] w-40">
+            <SelectValue placeholder="All categories" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#303030] text-white border-[#292c33]">
+            <SelectItem value="all">All categories</SelectItem>
+            {uniqueCategories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          onValueChange={(value) => {
+            setColumnFilters((prev) => {
+              const others = prev.filter((f) => f.id !== "status");
+              return value !== "all"
+                ? [...others, { id: "status", value }]
+                : others;
+            });
+          }}
+        >
+          <SelectTrigger className="bg-[#303030] text-white border-[#292c33] w-40">
+            <SelectValue placeholder="All statuses" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#303030] text-white border-[#292c33]">
+            <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="In stock">In stock</SelectItem>
+            <SelectItem value="Low stock">Low stock</SelectItem>
+            <SelectItem value="Out of stock">Out of stock</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="rounded-lg overflow-hidden border border-border overflow-x-auto ">
+        <Table className="bg-[#303030] text-white">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-white border-x-2 border-[#404040]"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center text-gray-400 py-10"
+                >
+                  No items found
                 </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+              </TableRow>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className="border-x-2 border-[#404040]"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 };
 
