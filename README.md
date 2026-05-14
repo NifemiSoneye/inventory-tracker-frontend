@@ -1,75 +1,135 @@
-# React + TypeScript + Vite
+# StockWise — Inventory Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack inventory management application that allows users to manage products, monitor stock levels, and organize inventory records through a clean dashboard interface.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend:** https://inventory-tracker-frontend-jet.vercel.app
+- **Backend:** https://inventory-tracker-backend-q4w6.onrender.com
 
-## React Compiler
+> Note: The backend is hosted on Render's free tier and may take 30–60 seconds to wake up on the first request after a period of inactivity.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## Repositories
 
-## Expanding the ESLint configuration
+- **Frontend:** https://github.com/NifemiSoneye/inventory-tracker-frontend
+- **Backend:** https://github.com/NifemiSoneye/inventory-tracker-backend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Add, edit, and delete inventory items
+- Track stock quantity with auto-derived status — In stock, Low stock, Out of stock
+- Dashboard summary — total products, low stock count, out of stock count, unique category count
+- Search products by name (server-side, debounced)
+- Filter by category and status (client-side)
+- Recent items panel in the sidebar
+- Responsive layout — table view on desktop, horizontally scrollable on mobile
+- Bottom sheet modal on mobile, centered modal on desktop
+- Toast notifications for create, update, and delete actions
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Tech Stack
+
+### Frontend
+- React + TypeScript
+- Vite
+- Tailwind CSS v4
+- Redux Toolkit + RTK Query
+- TanStack Table v8
+- Shadcn UI
+- Lucide Icons
+
+### Backend
+- Node.js + Express
+- TypeScript (CommonJS)
+- MongoDB + Mongoose
+- REST API
+
+---
+
+## API Endpoints
+
+### Items
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/items` | Get all items (supports `?search=`, `?category=`, `?status=`) |
+| POST | `/items` | Create a new item |
+| GET | `/items/:id` | Get a single item |
+| PATCH | `/items/:id` | Update an item |
+| DELETE | `/items/:id` | Delete an item |
+
+### Dashboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/dashboard` | Get inventory summary stats |
+
+---
+
+## Item Model
+
+```json
+{
+  "name": "Wireless Keyboard",
+  "category": "Electronics",
+  "quantity": 42,
+  "price": 12000,
+  "status": "In stock"
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> Status is automatically derived from quantity — no manual input required.
+> - `quantity === 0` → Out of stock
+> - `quantity > 0 && quantity <= 5` → Low stock
+> - `quantity > 5` → In stock
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Running Locally
+
+### Backend
+
+```bash
+git clone https://github.com/NifemiSoneye/inventory-tracker-backend
+cd inventory-tracker-backend
+npm install
 ```
+
+Create a `.env` file in the root:
+
+```
+MONGO_URI=your_mongodb_connection_string
+PORT=3500
+ALLOWED_ORIGINS=http://localhost:5173
+```
+
+```bash
+npm run dev
+```
+
+### Frontend
+
+```bash
+git clone https://github.com/NifemiSoneye/inventory-tracker-frontend
+cd inventory-tracker-frontend
+npm install
+```
+
+Create a `.env` file in the root:
+
+```
+VITE_API_URL=http://localhost:3500
+```
+
+```bash
+npm run dev
+```
+
+---
+
+## Author
+
+Nifemi Soneye

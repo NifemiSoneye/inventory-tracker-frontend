@@ -208,7 +208,7 @@ const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="rounded-lg overflow-hidden border border-border overflow-x-auto ">
+      <div className="rounded-lg overflow-hidden border border-[#404040] overflow-x-auto ">
         <Table className="bg-[#303030] text-white">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
