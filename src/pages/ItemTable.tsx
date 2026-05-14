@@ -28,14 +28,16 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, TableOfContents } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 type Props = {
   data: InventoryItem[];
   onEdit: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
+  deleteLoading: boolean;
 };
 
-const ItemTable = ({ data, onEdit, onDelete }: Props) => {
+const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
   const ActionsCell = ({ row }: CellContext<InventoryItem, unknown>) => {
     return (
       <DropdownMenu>
@@ -45,17 +47,32 @@ const ItemTable = ({ data, onEdit, onDelete }: Props) => {
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => onEdit(row.original)}>
+        <DropdownMenuContent
+          align="end"
+          className="bg-[#303030] border-[#292c33] text-white"
+        >
+          <DropdownMenuLabel className="text-gray-400">
+            Actions
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator className="bg-[#292c33]" />
+          <DropdownMenuItem
+            onClick={() => onEdit(row.original)}
+            className="hover:bg-[#3a3a3a] cursor-pointer"
+          >
             Edit item
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => onDelete(row.original.id)}
-            className="text-red-500"
+            className="text-red-500 hover:bg-[#3a3a3a] cursor-pointer"
+            onSelect={(e) => {
+              e.preventDefault();
+              onDelete(row.original.id);
+            }}
           >
-            Delete item
+            {deleteLoading ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Delete Item"
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -85,6 +102,16 @@ const ItemTable = ({ data, onEdit, onDelete }: Props) => {
   StatusCell.displayName = "StatusCell";
   const columnHelper = createColumnHelper<InventoryItem>();
 
+  const PriceCell = ({ row }: CellContext<InventoryItem, unknown>) => {
+    return <span>₦{row.original.price.toLocaleString("en-US")}</span>;
+  };
+  PriceCell.displayName = "PriceCell";
+
+  const QuantityCell = ({ row }: CellContext<InventoryItem, unknown>) => {
+    return <span>{row.original.quantity.toLocaleString("en-US")}</span>;
+  };
+  QuantityCell.displayName = "QuantityCell";
+
   const columns = [
     columnHelper.display({
       id: "actions",
@@ -99,9 +126,11 @@ const ItemTable = ({ data, onEdit, onDelete }: Props) => {
     }),
     columnHelper.accessor("quantity", {
       header: "Quantity",
+      cell: QuantityCell,
     }),
     columnHelper.accessor("price", {
       header: "Price",
+      cell: PriceCell,
     }),
     columnHelper.accessor("status", {
       header: "Status",
@@ -115,13 +144,13 @@ const ItemTable = ({ data, onEdit, onDelete }: Props) => {
     getCoreRowModel: getCoreRowModel(),
   });
   return (
-    <div className="rounded-lg overflow-hidden border border-border">
-      <Table>
+    <div className="rounded-lg overflow-hidden border border-border overflow-x-auto ">
+      <Table className="bg-[#303030] text-white">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="text-white">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
