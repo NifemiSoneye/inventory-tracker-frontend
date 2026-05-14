@@ -187,7 +187,7 @@ const Dashboard = () => {
           <p className="font-semibold text-2xl text-white">
             {analytics?.totalProductCount}
           </p>
-          <p>
+          <p className="text-white">
             across {analytics?.uniqueCategoryCount}{" "}
             {analytics?.uniqueCategoryCount > 1 ? "categories" : "category"}
           </p>
@@ -198,7 +198,7 @@ const Dashboard = () => {
           <p className="font-semibold text-2xl text-yellow-400">
             {analytics?.lowStockCount}
           </p>
-          <p>need restocking</p>
+          <p className="text-yellow-400">need restocking</p>
         </div>
 
         <div className="bg-[#303030] py-4 pl-4 pr-4 border border-transparent rounded-xl col-span-2 lg:col-span-1">
@@ -206,7 +206,7 @@ const Dashboard = () => {
           <p className="font-semibold text-2xl text-red-600">
             {analytics?.noStockCount}
           </p>
-          <p>unavailable</p>
+          <p className="text-red-600">unavailable</p>
         </div>
       </div>
       <DebouncedInput
