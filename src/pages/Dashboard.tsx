@@ -1,9 +1,43 @@
 import React from "react";
 import { useGetAnalyticsQuery } from "@/api/inventoryApi";
 import { Button } from "@/components/ui/button";
+import { type InventoryItem } from "@/lib/types";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useGetAllItemsQuery, selectAllItems } from "@/api/inventoryApi";
+import ItemTable from "./ItemTable";
+import { LoaderCircle } from "lucide-react";
 
 const Dashboard = () => {
+  const { isLoading, isError } = useGetAllItemsQuery({});
+  const items = useSelector(selectAllItems);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const handleEdit = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setIsEditOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setSelectedItem(items.find((item) => item.id === id) ?? null);
+    setIsDeleteOpen(true);
+  };
   const { data: analytics } = useGetAnalyticsQuery(undefined);
+
+  if (isLoading)
+    return (
+      <div className="fixed inset-0 z-50 bg-[#0B1628]">
+        <div className="w-full h-dvh grid place-content-center">
+          <LoaderCircle className="h-48 w-48 animate-spin text-white" />
+        </div>
+      </div>
+    );
+
+  if (isError)
+    return <p className="text-red-500 p-4">Failed to load inventory.</p>;
+
   return (
     <div className="bg-black min-h-screen p-4">
       <section className=" items-center justify-between p-4 hidden lg:flex">
@@ -47,6 +81,7 @@ const Dashboard = () => {
           <p>unavailable</p>
         </div>
       </div>
+      <ItemTable data={items} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
   );
 };

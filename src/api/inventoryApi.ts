@@ -2,16 +2,7 @@
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../app/store";
-
-export interface InventoryItem {
-  id: string;
-  _id: string;
-  name: string;
-  category: string;
-  quantity: number;
-  price: number;
-  status: "In stock" | "Low stock" | "Out of stock";
-}
+import { type InventoryItem } from "@/lib/types";
 
 export type CreateItemPayload = Omit<InventoryItem, "_id" | "id" | "status">;
 export type UpdateItemPayload = { id: string } & Omit<
