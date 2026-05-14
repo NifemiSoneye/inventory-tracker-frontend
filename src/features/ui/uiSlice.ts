@@ -2,9 +2,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 
-interface toggleState {
+/* interface toggleState {
   sidebarOpen: boolean;
-}
+} */
 const uiSlice = createSlice({
   name: "ui",
   initialState: { sidebarOpen: false },

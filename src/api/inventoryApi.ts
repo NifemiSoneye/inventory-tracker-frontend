@@ -63,7 +63,7 @@ export const inventoryApiSlice = createApi({
         responseData.id = responseData._id;
         return responseData;
       },
-      providesTags: (result, error, arg) => [
+      providesTags: (_result, _error, arg) => [
         { type: "Item" as const, id: arg },
       ],
     }),
@@ -87,7 +87,7 @@ export const inventoryApiSlice = createApi({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "Item", id: arg.id },
         { type: "Item", id: "LIST" },
       ],
@@ -99,7 +99,7 @@ export const inventoryApiSlice = createApi({
         method: "DELETE",
         body: { id },
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "Item", id: arg },
         { type: "Item", id: "LIST" },
       ],
