@@ -216,7 +216,7 @@ const Dashboard = () => {
         className="bg-[#303030] text-white border-[#292c33] placeholder:text-gray-500 mb-4"
       />
       <ItemTable
-        data={items}
+        data={[...items].reverse()}
         onEdit={handleEdit}
         onDelete={handleDelete}
         deleteLoading={isDeleteLoading}

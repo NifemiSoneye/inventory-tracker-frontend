@@ -16,10 +16,10 @@ import {
   useReactTable,
   type ColumnFiltersState,
   getFilteredRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 
 import { useState } from "react";
-import {} from "@tanstack/react-table";
 
 import {
   Table,
@@ -52,6 +52,10 @@ type Props = {
 
 const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 3,
+  });
   const uniqueCategories = [...new Set(data.map((item) => item.category))];
   const ActionsCell = ({ row }: CellContext<InventoryItem, unknown>) => {
     return (
@@ -156,10 +160,15 @@ const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
   const table = useReactTable({
     data,
     columns,
-    state: { columnFilters },
+    state: {
+      columnFilters,
+      pagination,
+    },
+    onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
   return (
     <>
@@ -258,6 +267,28 @@ const ItemTable = ({ data, onEdit, onDelete, deleteLoading }: Props) => {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-sm text-gray-400">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {Math.max(1, table.getPageCount())}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </>
   );
